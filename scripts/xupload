@@ -1,0 +1,16 @@
+#!/bin/bash
+FILE="$1"
+
+if [ -f "$FILE" ]; then
+  OUTPUT=$(upload "$FILE")
+  if [[ $OUTPUT == *"http"* ]]; then
+    echo -n "$OUTPUT" | xclip -selection clipboard
+    
+    echo "$OUTPUT"
+    notify-send -a "xupload" -i "icons/uploaded.png" "File uploaded" "Dest: $OUTPUT"
+  else
+    echo "$OUTPUT"
+  fi
+else
+  echo "File '$FILE' not found"
+fi

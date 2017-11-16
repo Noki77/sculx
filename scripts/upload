@@ -1,0 +1,17 @@
+#!/bin/bash
+UPLOAD_DEST="https://my.amazing.yanius/api/upload"
+API_KEY="<yanius api key>"
+
+FILE_TO_UPLOAD="$1"
+if [ -f "$FILE_TO_UPLOAD" ]; then
+  OUTPUT=$(curl -F apikey=$API_KEY -F "file=@$FILE_TO_UPLOAD" -s "$UPLOAD_DEST")
+  MESSAGE=$(echo $OUTPUT | jq -r .message)
+  if [[ $MESSAGE == "File uploaded" ]]; then
+    echo $(echo $OUTPUT | jq -r .url)
+  else
+    echo "'$MESSAGE' != 'File uploaded'"
+    echo "Upload failed: $MESSAGE"
+  fi
+else
+  echo "File '$FILE_TO_UPLOAD' not found"
+fi
