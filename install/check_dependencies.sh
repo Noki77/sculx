@@ -1,18 +1,19 @@
 #!/bin/bash
 
-declare -A PACKAGE_NAME_INDEXES
-PACKAGE_NAME_INDEXES[mpg123]=1
-PACKAGE_NAME_INDEXES[xclip]=2
-PACKAGE_NAME_INDEXES[jq]=3
-PACKAGE_NAME_INDEXES[curl]=4
-PACKAGE_NAME_INDEXES[notify-send]=5
+declare -A COMMAND_PKGS
+COMMAND_PKGS[mpg123]="mpg123"
+COMMAND_PKGS[xclip]="xclip"
+COMMAND_PKGS[jq]="jq"
+COMMAND_PKGS[curl]="curl"
+COMMAND_PKGS[notify-send]="libnotify"
 
-PACKAGES=("mpg123" "xclip" "jq" "curl" "libnotify")
-PACKAGES_DEBIAN=("mpg123" "xclip" "jq" "curl" "libnotify-bin")
-#PACKAGES_ARCH=("mpg123" "xclip" "jq" "curl" "libnotify")
-#PACKAGES_FEDORA=("mpg123" "xclip" "jq" "curl" "libnotify")
-#PACKAGES_REDHAT=("mpg123" "xclip" "jq" "curl" "libnotify")
-#PACKAGES_SUSE=("mpg123" "xclip" "jq" "curl" "libnotify")
+declare -A COMMAND_PKGS_DEB
+COMMAND_PKGS_DEB[mpg123]="mpg123"
+COMMAND_PKGS_DEB[xclip]="xclip"
+COMMAND_PKGS_DEB[jq]="jq"
+COMMAND_PKGS_DEB[curl]="curl"
+COMMAND_PKGS_DEB[notify-send]="libnotify-bin"
+
 
 REQUIRED_COMMANDS=("mpg123" "xclip" "jq" "curl" "notify-send")
 
@@ -30,11 +31,11 @@ function getPackageManager() {
 function checkDependencies() {
   MISSING_DEPS=""
   for command in "${REQUIRED_COMMANDS[@]}"; do
-    checkForCommand $command
-    if [ "$?" -eq 1 ]; then
+	command -v "$command" &>/dev/null || {
       MISSING_DEPS="$MISSING_DEPS $command"
-    fi
+    }
   done
+  MISSING_DEPS=$(echo $MISSING_DEPS | sed -e 's/^[[:space:]]*//')
   echo "$MISSING_DEPS"
 
   if [[ ! $MISSING_DEPS = "" ]]; then
@@ -42,24 +43,22 @@ function checkDependencies() {
   fi
 }
 
-function checkForCommand() {
-  command -v "$1" &>/dev/null || {
-    return 1
-  }
-}
-
 function getMissingPackages() {
   pkgs=""
-  package_array=("${PACKAGES[@]}")
+  isDeb=false
   if [[ $(getPackageManager) = "apt" ]]; then
-    package_array=("${PACKAGES_DEBIAN[@]}")
+    isDeb=true
   fi
-# TODO: broken in bash, working in zsh
+
   for cmd in `checkDependencies`; do
-    index=$PACKAGE_NAME_INDEXES[$cmd]
-    packageName=$package_array[$index]
+		if [ isDeb ]; then		
+    	packageName=${COMMAND_PKGS_DEB[$cmd]}
+		else
+		  packageName=${COMMAND_PKGS[$cmd]}
+		fi
     pkgs="$pkgs $packageName"
   done
+  pkgs=$(echo $pkgs | sed -e 's/^[[:space:]]*//')
   echo $pkgs
 
   if [[ ! $pkgs = "" ]]; then
@@ -83,7 +82,7 @@ function checkAndInstall() {
   packages=$(getMissingPackages)
 
   if [[ "$?" = 1 ]]; then
-    echo "It seems you are missing the following dependencies:$packages"
+    echo "It seems you are missing the following dependencies: $packages"
     echo -n "Should I install them for you (y/n)? "
     if [[ $(readBool) -eq 1 ]]; then
       case $package_manager in
@@ -100,4 +99,3 @@ function checkAndInstall() {
   fi
 }
 
-checkAndInstall

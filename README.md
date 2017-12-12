@@ -16,7 +16,7 @@ These are just simple screenshot scripts for use in terminal emulators or keybin
 ## Installation
 Use the remote installtion script in the main directory:
 ```bash
-curl -s https://raw.githubusercontent.com/Noki77/sculx/master/remote_install.sh | sh
+curl -s https://raw.githubusercontent.com/Noki77/sculx/master/quicksetup.sh | sh
 ```
 
 ## Configuration

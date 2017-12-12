@@ -19,7 +19,7 @@ function readOption() {
   fi
 }
 
-echo "Install system wide, or only for this user?"
+echo "Install system wide, or for this user only?"
 echo "1 system wide"
 echo "2 this user"
 echo -n "(1/2): "
