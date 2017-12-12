@@ -31,7 +31,7 @@ function getPackageManager() {
 function checkDependencies() {
   MISSING_DEPS=""
   for command in "${REQUIRED_COMMANDS[@]}"; do
-	command -v "$command" &>/dev/null || {
+    command -v "$command" &>/dev/null || {
       MISSING_DEPS="$MISSING_DEPS $command"
     }
   done
@@ -51,11 +51,11 @@ function getMissingPackages() {
   fi
 
   for cmd in `checkDependencies`; do
-		if [ isDeb ]; then		
-    	packageName=${COMMAND_PKGS_DEB[$cmd]}
-		else
-		  packageName=${COMMAND_PKGS[$cmd]}
-		fi
+        if [ isDeb ]; then        
+        packageName=${COMMAND_PKGS_DEB[$cmd]}
+        else
+          packageName=${COMMAND_PKGS[$cmd]}
+        fi
     pkgs="$pkgs $packageName"
   done
   pkgs=$(echo $pkgs | sed -e 's/^[[:space:]]*//')
@@ -86,11 +86,11 @@ function checkAndInstall() {
     echo -n "Should I install them for you (y/n)? "
     if [[ $(readBool) -eq 1 ]]; then
       case $package_manager in
-        apt ) eval "sudo apt install -y$packages";;
-        pacman ) eval "sudo pacman -S$packages --needed --noconfirm";;
-        zypper ) eval "sudo zypper in$packages";;
-        dnf ) eval "sudo dnf install -y$packages";;
-        yum ) eval "sudo yum install -y$packages";;
+        apt ) eval "sudo apt install -y $packages";;
+        pacman ) eval "sudo pacman -S $packages --needed --noconfirm";;
+        zypper ) eval "sudo zypper in $packages";;
+        dnf ) eval "sudo dnf install -y $packages";;
+        yum ) eval "sudo yum install -y $packages";;
         * ) echo "Sorry, you're package manager is not supported yet.";;
       esac
     fi

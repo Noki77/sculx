@@ -1,16 +1,24 @@
 #!/bin/bash
-FILE="$1"
+SCULX_CONFIG_DIR="/etc/sculx"
 
-if [ -f "$FILE" ]; then
-  OUTPUT=$(upload "$FILE")
-  if [[ $OUTPUT == *"http"* ]]; then
-    echo -n "$OUTPUT" | xclip -selection clipboard
-    
-    echo "$OUTPUT"
-    notify-send -a "xupload" -i "icons/uploaded.png" "File uploaded" "Dest: $OUTPUT"
-  else
-    echo "$OUTPUT"
-  fi
+#-------------------------------------------------------------------------------------------
+
+source "$SCULX_CONFIG_DIR/sculx.conf.sh"
+
+if [ -f "$1" ]; then
+    OUTPUT=$(upload "$1")
+    if [[ $OUTPUT == *"http"* ]]; then
+        echo "$OUTPUT"
+        echo -n "$OUTPUT" | xclip -selection clipboard
+        notify-send -a "sculx" -i "$SCULX_CONFIG_DIR/res/gfx/uploaded.png" "File uploaded" "Dest: $OUTPUT"
+        mpg123 -q --scale $MPG123_SCALE "$SCULX_CONFIG_DIR/res/sounds/success.mp3" &2>/dev/null
+    else
+        echo "$OUTPUT"
+        notify-send -a "sculx" "Upload failed" "$OUTPUT"
+        mpg123 -q --scale $MPG123_SCALE "$SCULX_CONFIG_DIR/res/sounds/fail.mp3" &2>/dev/null
+    fi
 else
-  echo "File '$FILE' not found"
+    echo "File '$1' not found"
+    notify-send -a "sculx" "Upload failed" "File not found"
+    mpg123 -q --scale $MPG123_SCALE "$SCULX_CONFIG_DIR/res/sounds/fail.mp3" &2>/dev/null
 fi

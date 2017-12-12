@@ -5,8 +5,6 @@ stands for **sc**reenshot **u**tility **l**inu**x**
 
 These are just simple screenshot scripts for use in terminal emulators or keybinds.
 
-**NOTICE**: These are just the scripts i've got on my machine atm. I'll improve them in near future, containing screenshot program profiles, configuration and upload service profiles.
-
 ## Features
 * Taking screenshots
 * Uploading screenshots to web services

@@ -1,17 +1,28 @@
 #!/bin/bash
-UPLOAD_DEST="https://my.amazing.yanius/api/upload"
-API_KEY="<yanius api key>"
+SCULX_CONFIG_DIR="/etc/sculx"
 
-FILE_TO_UPLOAD="$1"
-if [ -f "$FILE_TO_UPLOAD" ]; then
-  OUTPUT=$(curl -F apikey=$API_KEY -F "file=@$FILE_TO_UPLOAD" -s "$UPLOAD_DEST")
-  MESSAGE=$(echo $OUTPUT | jq -r .message)
-  if [[ $MESSAGE == "File uploaded" ]]; then
-    echo $(echo $OUTPUT | jq -r .url)
-  else
-    echo "'$MESSAGE' != 'File uploaded'"
-    echo "Upload failed: $MESSAGE"
-  fi
-else
-  echo "File '$FILE_TO_UPLOAD' not found"
+#-------------------------------------------------------------------------------------------
+
+if [ ! -f "$1" ]; then
+    echo "File '$1' not found."
+    exit
 fi
+
+source "$SCULX_CONFIG_DIR/sculx.conf.sh"
+
+uploadProfileFile="${SCULX_CONFIG_DIR}/profiles.d/upload/${ACTIVE_UPLOAD_PROFILE}.sh"
+if [ ! -f $uploadProfileFile ]; then
+    echo "Upload configuration '$ACTIVE_UPLOAD_PROFILE' not found."
+    exit
+fi
+
+source "$uploadProfileFile" "$1"
+
+UPLOAD_COMMAND="curl -s \"$UPLOAD_DEST\" -A \"$USER_AGENT\""
+
+for param in "${!UPLOAD_PARAMS[@]}"; do
+    UPLOAD_COMMAND="$UPLOAD_COMMAND -F $param=${UPLOAD_PARAMS[$param]}"
+done
+
+MSG=$(eval $UPLOAD_COMMAND)
+echo $(processServerResponse "$MSG")
