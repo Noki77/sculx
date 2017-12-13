@@ -33,7 +33,7 @@ if [[ $(readOption "1/2") -eq 2 ]]; then
     SCRIPT_FOLDER="$HOME/.local/bin"
 
     if [[ ! $PATH == *"$HOME/.local/bin"* ]]; then
-        cmd="export PATH=$PATH:$HOME/.local/bin"
+        cmd="export PATH=\$PATH:$HOME/.local/bin"
         echo -e "\n$cmd" >> $HOME/.profile
         eval "$cmd"
 
@@ -44,6 +44,10 @@ fi
 echo "Creating required directories"
 $SUDO mkdir -p $CONFIG_FOLDER
 $SUDO mkdir -p $SCRIPT_FOLDER
+
+echo "Updating configuration paths"
+SED_F_PATH=${CONFIG_FOLDER//\//\\\/}
+sed -i "s/SCULX_CONFIG_DIR=\"\/etc\/sculx\"/SCULX_CONFIG_DIR=\"$SED_F_PATH\"/g" $repoPath/bin/*
 
 echo "Installing scripts"
 $SUDO cp -f $repoPath/bin/* $SCRIPT_FOLDER/

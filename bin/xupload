@@ -8,17 +8,17 @@ source "$SCULX_CONFIG_DIR/sculx.conf.sh"
 if [ -f "$1" ]; then
     OUTPUT=$(upload "$1")
     if [[ $OUTPUT == *"http"* ]]; then
-        echo "$OUTPUT"
         echo -n "$OUTPUT" | xclip -selection clipboard
         notify-send -a "sculx" -i "$SCULX_CONFIG_DIR/res/gfx/uploaded.png" "File uploaded" "Dest: $OUTPUT"
         mpg123 -q --scale $MPG123_SCALE "$SCULX_CONFIG_DIR/res/sounds/success.mp3" &2>/dev/null
-    else
         echo "$OUTPUT"
+    else
         notify-send -a "sculx" "Upload failed" "$OUTPUT"
         mpg123 -q --scale $MPG123_SCALE "$SCULX_CONFIG_DIR/res/sounds/fail.mp3" &2>/dev/null
+        echo "$OUTPUT"
     fi
 else
-    echo "File '$1' not found"
     notify-send -a "sculx" "Upload failed" "File not found"
     mpg123 -q --scale $MPG123_SCALE "$SCULX_CONFIG_DIR/res/sounds/fail.mp3" &2>/dev/null
+    echo "File '$1' not found"
 fi
