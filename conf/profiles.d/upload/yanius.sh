@@ -6,6 +6,8 @@ declare -A UPLOAD_PARAMS
 UPLOAD_PARAMS["apikey"]="yanius apikey"
 UPLOAD_PARAMS["file"]="@\"$1\""
 
+# -----------------------------------------------------------------------
+
 function processServerResponse {
     MESSAGE=$(echo "$1" | jq -r .message)
     if [[ $MESSAGE == "File uploaded" ]]; then

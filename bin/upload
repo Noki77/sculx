@@ -20,6 +20,17 @@ source "$uploadProfileFile" "$1"
 
 UPLOAD_COMMAND="curl -s \"$UPLOAD_DEST\" -A \"$USER_AGENT\""
 
+if [[ $REQ_METHOD != "" ]]; then
+    UPLOAD_COMMAND="$UPLOAD_COMMAND -X $REQ_METHOD"
+fi
+
+if [ -z "$UPLOAD_HEADERS" ]; then
+    for name in "${!UPLOAD_HEADERS[@]}"; do
+        value=${UPLOAD_HEADERS[$name]}
+        UPLOAD_COMMAND="$UPLOAD_COMMAND --header '$name: $value'"
+    done
+fi
+
 for param in "${!UPLOAD_PARAMS[@]}"; do
     UPLOAD_COMMAND="$UPLOAD_COMMAND -F $param=${UPLOAD_PARAMS[$param]}"
 done
